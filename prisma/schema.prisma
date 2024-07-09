@@ -14,7 +14,16 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  name       String
+  couponUsed Coupon[]
+}
+
+model Coupon {
+  id       String  @id @default(uuid())
+  isActive Boolean @default(true)
+  useBy    User?   @relation(fields: [userId], references: [id])
+  userId   String?
 }
