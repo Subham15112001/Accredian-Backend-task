@@ -2,13 +2,11 @@ import { PrismaClient } from '@prisma/client'
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
-const prisma = new PrismaClient
-
-prisma.$extends({
+const prisma = new PrismaClient().$extends({
     model : {
         user : {
             async isPasswordCorrect(password,reqPassword){
-                return await bcrypt.compare(password,reqPassword)
+                return await bcrypt.compare(reqPassword, password)
             },
             generateRefreshToken(userId){
                 return jwt.sign(
@@ -37,10 +35,11 @@ prisma.$extends({
     query : {
         user : {
             async create({ model, operation, args, query }){
-                const user = args.data;
-                user.password = await bcrypt.hash(this.password, 10);
+                let user = args.data;
+                let password = await bcrypt.hash(user.password, 10);
+                user = {...user,password : password}
                 args.data = user;
-                query(args);
+                return query(args);
             },
             async update({ model, operation, args, query }){
                 const user = args.data;
@@ -49,7 +48,7 @@ prisma.$extends({
                 }
                
                 args.data = user;
-                query(args);
+                return query(args);
             }
         }
     }

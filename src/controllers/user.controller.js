@@ -58,7 +58,7 @@ const registerUser = asyncHandler(async (req,res,next) => {
             "username":username
         }
     })
-    
+    console.log(createUser)
 
     if(!createUser){
         throw new ApiError(500,"something went wrong when creating user")
@@ -68,4 +68,7 @@ const registerUser = asyncHandler(async (req,res,next) => {
               .json(new ApiResponse(201,createUser,"created user successfully"))
 })
 
-export {registerUser}
+const loginUser = asyncHandler(async (req,res,next) => {
+
+})
+export {registerUser,loginUser}
