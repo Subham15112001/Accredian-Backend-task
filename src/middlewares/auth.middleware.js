@@ -20,7 +20,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
             },
             omit : {
                 password : true,
-                refreshToken : true
             }
         });
 
@@ -32,6 +31,12 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
         next();
     } catch (error) {
-        throw new ApiError(401, error?.message || "invalid acceddToken")
+        if (error.name === 'TokenExpiredError') {
+            throw new ApiError(403, "Refresh token has expired");
+        } else if (error.name === 'JsonWebTokenError') {
+            throw new ApiError(403, "Invalid refresh token");
+        } else {
+            next(error);
+        }
     }
 })
