@@ -18,8 +18,8 @@ model User {
   id           String   @id @default(uuid())
   email        String   @unique
   password     String
-  name         String
-  refreshToken String
+  username     String
+  refreshToken String?
   couponUsed   Coupon[]
 }
 
