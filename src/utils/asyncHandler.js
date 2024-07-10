@@ -6,7 +6,7 @@ const asyncHandler = (requestHandler) => {
         //     resolve(requestHandler(req,res,next));
         // }).catch((err) => next(err))
 
-        Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err)).finally(async () => await prisma.$disconnect());
+        Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err));
     }
 }
 

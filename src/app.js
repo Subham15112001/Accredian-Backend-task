@@ -22,8 +22,13 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 //-----------------------------------------------------------------
+app.get('/', (req, res) => {
+    res.json({ status: 'API is running on /api' });
+});
 
 //routes import 
+import userRouter from './routes/user.routes.js'
 
+app.use("/api/v1/users",userRouter)
 
 export { app }

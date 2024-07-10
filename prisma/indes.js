@@ -44,7 +44,10 @@ prisma.$extends({
             },
             async update({ model, operation, args, query }){
                 const user = args.data;
-                user.password = await bcrypt.hash(this.password, 10);
+                if (user.password) { // Only hash password if it's provided
+                    user.password = await bcrypt.hash(user.password, 10);
+                }
+               
                 args.data = user;
                 query(args);
             }

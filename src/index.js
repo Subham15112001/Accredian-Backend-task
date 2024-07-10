@@ -9,16 +9,9 @@ dotenv.config({
     path: './.env'
 })
 
-async function main() {
-    app.listen(port, () => {
-        console.log(`server is running on port ${port}`)
-    })
-}
 
-main()
-    .catch((e) => {
-        console.log(e.message)
-    })
-    .finally(async () => {
-        await prisma.$disconnect()
-    })
+app.listen(port, () => {
+    console.log(`server is running on port ${port}`)
+})
+
+

@@ -36,14 +36,14 @@ const generateAccessTokenandRefreshToken = async (userId,password) => {
 const registerUser = asyncHandler(async (req,res,next) => {
     const {  username, email, password } = req.body;
 
-
+  
     if ([ username, email].some((value) => value.trim() === "")) {
         throw new ApiError(400, "all field are neccessary")
     }
 
     const existedUser = await prisma.user.findUnique({
         where : {
-            email : email
+            "email" : email
         }
     })
 
@@ -51,13 +51,14 @@ const registerUser = asyncHandler(async (req,res,next) => {
         throw new ApiError(409,"user already exist")
     }
 
-    const createUser = prisma.user.create({
+    const createUser = await prisma.user.create({
         data : {
-            email,
-            password,
-            username
+            "email":email,
+            "password":password,
+            "username":username
         }
     })
+    
 
     if(!createUser){
         throw new ApiError(500,"something went wrong when creating user")
@@ -66,3 +67,5 @@ const registerUser = asyncHandler(async (req,res,next) => {
     return res.status(201)
               .json(new ApiResponse(201,createUser,"created user successfully"))
 })
+
+export {registerUser}
