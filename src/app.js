@@ -10,7 +10,7 @@ app.use(cors({
 }))
 
 //limit json size
-app.use(express.json({ limit: "16kb" }))
+app.use(express.json({ limit: "2MB" }))
 
 //configure url, extended true so that we can have obj inside obj
 app.use(express.urlencoded({ extended: true }))

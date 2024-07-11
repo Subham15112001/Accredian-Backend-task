@@ -8,9 +8,6 @@ const generateAccessTokenandRefreshToken = async (userId) => {
     try {
 
         // get user by id
-       
-       
-
         const accessToken = await prisma.user.generateAccessToken(userId);
         const refreshToken = await prisma.user.generateRefreshToken(userId);
 
@@ -67,13 +64,13 @@ const registerUser = asyncHandler(async (req,res,next) => {
 
 const loginUser = asyncHandler(async (req,res,next) => {
     const {email,password} = req.body;
-
-    const userExist = await prisma.user.findUnique({
+    
+    let userExist = await prisma.user.findUnique({
         where : {
-            "email" : email
+            email : email
         }
     })
-
+    
     if(!userExist){
         throw new ApiError(404,"user does not exist")
     }
@@ -188,4 +185,9 @@ const refreshAccessToken = asyncHandler(async (req,res,next) => {
     }
 })
 
-export {registerUser,loginUser,logoutUser,refreshAccessToken}
+const getCurrentUser = asyncHandler(async (req, res, next) => {
+    return res.status(200)
+        .json(new ApiResponse(200, req.user, "current user fetched"))
+})
+
+export {registerUser,loginUser,logoutUser,refreshAccessToken,getCurrentUser}
