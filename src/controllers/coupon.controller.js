@@ -39,6 +39,10 @@ const useCouponByUser = asyncHandler(async (req,res,next) => {
         throw new ApiError(401,"coupon code is not valid")
     }
 
+    if (couponCode?.isActive === false){
+        throw new ApiError(401,"coupon is not active")
+    }
+
     const useCoupon = await prisma.user.findUnique({
         where : {
             id : userId,
@@ -85,7 +89,71 @@ const useCouponByUser = asyncHandler(async (req,res,next) => {
     return res.status(201)
               .json(new ApiResponse(201,addCouponUsedByUser,"used coupon successfully"))
 })
+
+const toggleCouponById = asyncHandler(async (req,res,next) => {
+    const couponId = req.body.couponId
+
+    const getCoupon = await prisma.coupon.findUnique({
+        where : {
+            id : couponId
+        },
+    })
+    console.log(getCoupon)
+
+    if(!getCoupon){
+        throw new ApiError(401,"invalid coupon")
+    }
+    const updateCoupon = await prisma.coupon.update({
+        where : {
+            id : couponId
+        },
+        data : {
+            isActive : (!getCoupon.isActive)
+        }
+    })
+
+    if(!getCoupon){
+        throw new ApiError(401,"invalid coupon")
+    }
+
+    return res.status(201)
+              .json(new ApiResponse(201,updateCoupon,"coupon activation toggle"))
+})
+
+const toggleCouponByCouponCode = asyncHandler(async(req,res,next) => {
+    const couponCode = req.body.couponCode
+
+    const getCoupon = await prisma.coupon.findUnique({
+        where: {
+            couponCode : couponCode
+        },
+    })
+    console.log(getCoupon)
+
+    if (!getCoupon) {
+        throw new ApiError(401, "invalid coupon")
+    }
+    const updateCoupon = await prisma.coupon.update({
+        where: {
+            couponCode : couponCode
+        },
+        data: {
+            isActive: (!getCoupon.isActive)
+        }
+    })
+
+    if (!getCoupon) {
+        throw new ApiError(401, "invalid coupon")
+    }
+
+    return res.status(201)
+        .json(new ApiResponse(201, updateCoupon, "coupon activation toggle"))
+})
+
+
 export {
     createCoupon,
-    useCouponByUser
+    useCouponByUser,
+    toggleCouponById,
+    toggleCouponByCouponCode
 }
