@@ -6,7 +6,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["metrics","omitApi"]
+  previewFeatures = ["metrics", "omitApi"]
 }
 
 datasource db {
@@ -15,17 +15,26 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  password     String
-  username     String
-  refreshToken String?
-  couponUsed   Coupon[]
+  id                 String               @id @default(uuid())
+  email              String               @unique
+  password           String
+  username           String
+  refreshToken       String?
+  CouponUserRelation CouponUserRelation[]
 }
 
 model Coupon {
-  id       String  @id @default(uuid())
-  isActive Boolean @default(true)
-  useBy    User?   @relation(fields: [userId], references: [id])
-  userId   String?
+  id         String               @id @default(uuid())
+  isActive   Boolean              @default(true)
+  couponCode String
+  couponUser CouponUserRelation[]
+}
+
+model CouponUserRelation {
+  coupons  Coupon @relation(fields: [couponId], references: [id])
+  couponId String
+  users    User   @relation(fields: [userId], references: [id])
+  userId   String
+
+  @@id([couponId,userId])
 }
