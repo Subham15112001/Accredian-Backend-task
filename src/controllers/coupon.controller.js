@@ -19,15 +19,14 @@ const createCoupon = asyncHandler(async (req,res,next) => {
         throw new ApiError(401,"error in creating coupon code")
     }
 
-   
-
     return res.status(201)
               .json(new ApiResponse(201,{createCouponResponse},"added coupon successfully"))
 })
 
-const addCouponUser = asyncHandler(async (req,res,next) => {
+const useCouponByUser = asyncHandler(async (req,res,next) => {
 
     const couponCode = req.body.couponCode;
+
     const userId = req.user.id;
 
     const couponExist = await prisma.coupon.findUnique({
@@ -40,10 +39,53 @@ const addCouponUser = asyncHandler(async (req,res,next) => {
         throw new ApiError(401,"coupon code is not valid")
     }
 
+    const useCoupon = await prisma.user.findUnique({
+        where : {
+            id : userId,
+            CouponUserRelation : {
+                some : {
+                    coupons : {
+                        couponCode : couponCode
+                    }
+                    
+                }
+            }
+        },
+        
+    })
+
+ 
+    if(useCoupon){
+        throw new ApiError(401,"coupon code is already used by you")
+    }
     
+    const addCouponUsedByUser = await prisma.couponUserRelation.create({
+       data : {
+        coupons : {
+            connect : {
+                id : couponExist.id
+            }
+        },
+        users : {
+            connect : {
+                id : userId
+            }
+        }
+       },
+        include : {
+            coupons : true,
+            users : true
+        }
+    })
     
+    if(!addCouponUsedByUser){
+        throw new ApiError(401,"unable to used coupon please try again")
+    }
+
+    return res.status(201)
+              .json(new ApiResponse(201,addCouponUsedByUser,"used coupon successfully"))
 })
 export {
     createCoupon,
-    addCouponUser
+    useCouponByUser
 }
