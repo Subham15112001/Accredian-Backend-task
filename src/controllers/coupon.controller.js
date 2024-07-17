@@ -16,7 +16,7 @@ const createCoupon = asyncHandler(async (req,res,next) => {
     })
 
     if(!createCouponResponse){
-        throw new ApiError(401,"error in creating coupon code")
+        throw new ApiError(406,"error in creating coupon code")
     }
 
     return res.status(201)
@@ -40,7 +40,7 @@ const useCouponByUser = asyncHandler(async (req,res,next) => {
     }
 
     if (couponCode?.isActive === false){
-        throw new ApiError(401,"coupon is not active")
+        throw new ApiError(402,"coupon is not active")
     }
 
     const useCoupon = await prisma.user.findUnique({
@@ -60,7 +60,7 @@ const useCouponByUser = asyncHandler(async (req,res,next) => {
 
  
     if(useCoupon){
-        throw new ApiError(401,"coupon code is already used by you")
+        throw new ApiError(404,"coupon code is already used by you")
     }
     
     const addCouponUsedByUser = await prisma.couponUserRelation.create({
@@ -83,7 +83,7 @@ const useCouponByUser = asyncHandler(async (req,res,next) => {
     })
     
     if(!addCouponUsedByUser){
-        throw new ApiError(401,"unable to used coupon please try again")
+        throw new ApiError(406,"unable to used coupon please try again")
     }
 
     return res.status(201)
@@ -101,7 +101,7 @@ const toggleCouponById = asyncHandler(async (req,res,next) => {
     console.log(getCoupon)
 
     if(!getCoupon){
-        throw new ApiError(401,"invalid coupon")
+        throw new ApiError(403,"invalid coupon")
     }
     const updateCoupon = await prisma.coupon.update({
         where : {
@@ -112,9 +112,7 @@ const toggleCouponById = asyncHandler(async (req,res,next) => {
         }
     })
 
-    if(!getCoupon){
-        throw new ApiError(401,"invalid coupon")
-    }
+   
 
     return res.status(201)
               .json(new ApiResponse(201,updateCoupon,"coupon activation toggle"))
@@ -131,7 +129,7 @@ const toggleCouponByCouponCode = asyncHandler(async(req,res,next) => {
     console.log(getCoupon)
 
     if (!getCoupon) {
-        throw new ApiError(401, "invalid coupon")
+        throw new ApiError(403, "invalid coupon")
     }
     const updateCoupon = await prisma.coupon.update({
         where: {
@@ -142,9 +140,7 @@ const toggleCouponByCouponCode = asyncHandler(async(req,res,next) => {
         }
     })
 
-    if (!getCoupon) {
-        throw new ApiError(401, "invalid coupon")
-    }
+   
 
     return res.status(201)
         .json(new ApiResponse(201, updateCoupon, "coupon activation toggle"))

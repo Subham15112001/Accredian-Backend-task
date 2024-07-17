@@ -19,6 +19,7 @@ const generateAccessTokenandRefreshToken = async (userId) => {
                 "refreshToken" : refreshToken
             }
         })
+        //console.log(response)
         
         return { accessToken, refreshToken };
 
@@ -83,16 +84,19 @@ const loginUser = asyncHandler(async (req,res,next) => {
 
     const {accessToken,refreshToken} = await generateAccessTokenandRefreshToken(userExist.id,password)
 
-    const loginUser = await prisma.user.findUnique({
+    const loginUser = await prisma.user.update({
         where : {
             id : userExist.id
+        },
+        data : {
+            refreshToken : refreshToken
         }
     })
 
    // console.log(loginUser)
 
     if(!loginUser ){
-        throw new ApiError(401,"error in login")
+        throw new ApiError(405,"error in login")
     }
 
     const option = {
@@ -154,6 +158,7 @@ const refreshAccessToken = asyncHandler(async (req,res,next) => {
                 id : decodedToken.id
             }
         })
+       // console.log(user)
 
         if(!user){
             throw new ApiError(403,"invalid authorisation")
@@ -173,7 +178,7 @@ const refreshAccessToken = asyncHandler(async (req,res,next) => {
         return res.status(200)
             .cookie("refreshToken", refreshToken, option)
             .cookie("accessToken", accessToken, option)
-            .json(new ApiResponse(200, { accessToken, refreshToken }, "accessToken and refreshToken send successfully"))
+            .json(new ApiResponse(200, { accessToken, refreshToken , user }, "accessToken and refreshToken send successfully"))
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
             throw new ApiError(403, "Refresh token has expired");
