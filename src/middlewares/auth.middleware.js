@@ -13,7 +13,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
         }
 
         const token = authHeader.split(' ')[1];
-        console.log(token)
+        //console.log(token)
         if (!token) {
             throw new ApiError(403, "unauthorised request")
         }
