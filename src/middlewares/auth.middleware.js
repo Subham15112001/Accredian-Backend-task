@@ -6,13 +6,14 @@ import prisma from '../../prisma/indes.js'
 export const verifyJWT = asyncHandler(async (req, res, next) => {
 
     try {
-        const authHeader = req.header("Authorization");
+        const authHeader = req?.header("Authorization");
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'Unauthorized' });
+        
+
+        let token = authHeader?.split(' ')[1] ;
+        if(!token){
+            token = req.cookies?.accessToken 
         }
-
-        const token = authHeader.split(' ')[1];
         //console.log(token)
         if (!token) {
             throw new ApiError(403, "unauthorised request")
