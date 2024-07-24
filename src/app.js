@@ -5,8 +5,10 @@ const app = express();
 
 //cofigur cors
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: 'https://accredian-frontend-task-sandy.vercel.app', // Ensure no trailing slash
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
+    optionsSuccessStatus: 204
 }))
 
 //limit json size
